@@ -1,18 +1,18 @@
 apiVersion: sources.eventing.knative.dev/v1alpha1
 kind: ContainerSource
 metadata:
-  name: redis-source
+  name: redis-queue-source
   namespace: demo
 spec:
-  image: us.gcr.io/s9-demo/redis-source:latest
+  image: gcr.io/s9-demo/kres:latest
   imagePullPolicy: Always
   env:
   - name: RELEASE
-    value: "v0.1.5"
+    value: "v0.1.3"
   - name: REDIS_HOST
     value: "redis.demo.svc.cluster.local:6379"
-  - name: REDIS_COUNTER_KEY
-    value: "counter"
+  - name: REDIS_QUEUE
+    value: "events"
   - name: REDIS_PASS
     valueFrom:
       secretKeyRef:

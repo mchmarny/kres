@@ -39,7 +39,7 @@ spec:
           - name: REDIS_PASS
             valueFrom:
               secretKeyRef:
-                name: env-secrets
+                name: redis-secrets
                 key: REDIS_PASS
           volumeMounts:
             - name: redis-volume

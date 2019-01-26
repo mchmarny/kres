@@ -1,0 +1,24 @@
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: events
+  namespace: demo
+spec:
+  runLatest:
+    configuration:
+      revisionTemplate:
+        metadata:
+          labels:
+            demo: events
+        spec:
+          container:
+            image: gcr.io/s9-demo/myevents:latest
+            imagePullPolicy: Always
+            env:
+            - name: RELEASE
+              value: "v0.3.2"
+            - name: GCP_PROJECT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: global-config
+                  key: project
