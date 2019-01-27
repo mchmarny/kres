@@ -19,6 +19,9 @@ redis:
 deps:
 	go mod tidy
 
+run:
+	go run cmd/service/*.go --sink=https://events.demo.knative.tech/
+
 image:
 	gcloud builds submit \
 		--project $(GCP_PROJECT) \
