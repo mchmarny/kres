@@ -14,6 +14,9 @@ redis-disk:
 redis:
 	kubectl apply -f config/redis.yaml
 
+forward:
+	kubectl port-forward pods/redis-0 6379:6379 -n demo
+
 # DEV
 
 deps:

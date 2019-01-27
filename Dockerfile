@@ -12,8 +12,7 @@ RUN go mod download
 
 # build
 WORKDIR /src/cmd/service/
-RUN CGO_ENABLED=0 go build -v -o /kres
-
+RUN CGO_ENABLED=0 go build -o /kres
 
 
 # RUN STAGE

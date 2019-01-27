@@ -2,6 +2,7 @@ package event
 
 import (
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -75,10 +76,10 @@ func (s *SinkSender) Send(data map[string]interface{}) error {
 
 	if resp.StatusCode != http.StatusOK &&
 		resp.StatusCode != http.StatusAccepted {
-
 		log.Printf("Response Status: %s", resp.Status)
 		body, _ := ioutil.ReadAll(resp.Body)
 		log.Printf("Response Body: %s", string(body))
+		return fmt.Errorf("Invalid response status code: %s", resp.Status)
 	}
 
 	return nil

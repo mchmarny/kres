@@ -3,12 +3,14 @@ kind: ContainerSource
 metadata:
   name: redis-queue-source
   namespace: demo
+  labels:
+    source: redis
 spec:
   image: gcr.io/s9-demo/kres:latest
   imagePullPolicy: Always
   env:
   - name: RELEASE
-    value: "v0.1.3"
+    value: "v0.1.4"
   - name: REDIS_HOST
     value: "redis.demo.svc.cluster.local:6379"
   - name: REDIS_QUEUE
