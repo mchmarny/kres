@@ -30,6 +30,9 @@ image:
 		--project $(GCP_PROJECT) \
 		--tag gcr.io/$(GCP_PROJECT)/kres:latest
 
+docker:
+	docker build -t kres .
+
 source:
 	kubectl apply -f config/source.yaml
 

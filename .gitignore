@@ -19,6 +19,6 @@
 .vscode
 
 # bin
-client
-service
+/client
+/service
 

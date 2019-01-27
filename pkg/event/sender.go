@@ -6,10 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"time"
 
-	ce "github.com/knative/pkg/cloudevents"
-	"github.com/mchmarny/kres/pkg/util"
+	"github.com/cloudevents/sdk-go/v02"
 )
 
 const (
@@ -19,7 +17,7 @@ const (
 
 // Sender represents the generic sender interface
 type Sender interface {
-	Send(data map[string]interface{}) error
+	Send(e *v02.Event) error
 }
 
 // SinkSender sends messages to sink
@@ -41,31 +39,23 @@ func NewSinkSender(sinkURI string) (sender Sender, err error) {
 
 // Send makes v02.Event event using passed data
 // and sends it to the the provided sinkURI
-func (s *SinkSender) Send(data map[string]interface{}) error {
+func (s *SinkSender) Send(e *v02.Event) error {
 
-	if data == nil {
-		return errors.New("Required argument: data")
+	if e == nil {
+		return errors.New("Required argument: event")
 	}
 
-	log.Printf("Data: %v", data)
+	log.Printf("Data: %v", e)
 
-	ex := ce.EventContext{
-		CloudEventsVersion: ce.CloudEventsVersion,
-		EventType:          redisEventType,
-		EventTypeVersion:   "v0.1",
-		EventID:            util.MakeUUID(),
-		EventTime:          time.Now(),
-		ContentType:        "application/json",
-		Source:             redisEventSource,
-	}
-
-	req, err := ce.Binary.NewRequest(s.uri, data, ex)
+	m := v02.NewDefaultHTTPMarshaller()
+	var req *http.Request
+	err := m.ToRequest(req, e)
 	if err != nil {
-		log.Printf("Error creating new quest: %v", err)
+		log.Printf("Unable to marshal event into http Request: %v", err)
 		return err
 	}
 
-	log.Printf("Posting to %s: %v", s.uri, data)
+	log.Printf("Posting to %s: %v", s.uri, req)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

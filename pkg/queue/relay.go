@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 
 	"github.com/mchmarny/kres/pkg/event"
+	"github.com/cloudevents/sdk-go/v02"
 
 	"github.com/adjust/rmq"
 )
@@ -25,27 +26,27 @@ func NewEventRelay(index int, sender event.Sender) *EventRelay {
 }
 
 // Consume is invoked on new queue event
-func (r *EventRelay) Consume(e rmq.Delivery) {
+func (r *EventRelay) Consume(d rmq.Delivery) {
 
-	p := e.Payload()
+	p := d.Payload()
 	log.Printf("Event Payload: %v", p)
 
-	m := make(map[string]interface{})
-	err := json.Unmarshal([]byte(p), &m)
-	if err != nil {
-		log.Printf("Error while parsing JSON from payload: %s", err)
-		e.Reject()
+	var e *v02.Event
+	if err := json.Unmarshal([]byte(p), e); err != nil {
+        log.Printf("Error while parsing JSON from payload: %s", err)
+		d.Reject()
 		return
-	}
+    }
 
-	err = r.Sender.Send(m)
+	// send the raw event
+	err = r.Sender.Send(e)
 
 	if err != nil {
 		log.Printf("Error while sending event: %v", err)
-		e.Reject()
+		d.Reject()
 	} else {
 		log.Println("Acking, event sent successfully")
-		e.Ack()
+		d.Ack()
 	}
 
 }
