@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 
 	"github.com/mchmarny/kres/pkg/event"
-	"github.com/mchmarny/kres/pkg/common"
+	"github.com/mchmarny/kapi/common"
 
 	"github.com/adjust/rmq"
 )

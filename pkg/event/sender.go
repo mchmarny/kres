@@ -9,12 +9,7 @@ import (
 
 	"github.com/knative/pkg/cloudevents"
 
-	"github.com/mchmarny/kres/pkg/common"
-)
-
-const (
-	redisEventSource = "io.redis"
-	redisEventType   = "io.redis.queue"
+	"github.com/mchmarny/kapi/common"
 )
 
 // Sender represents the generic sender interface

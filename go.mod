@@ -1,17 +1,16 @@
 module github.com/mchmarny/kres
 
 require (
-	github.com/adjust/gocheck v0.0.0-20131111155431-fbc315b36e0e // indirect
 	github.com/adjust/rmq v1.0.0
-	github.com/adjust/uniuri v0.0.0-20130923163420-498743145e60 // indirect
-	github.com/cloudevents/sdk-go v0.0.0-20190102195109-feec6e002535
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/garyburd/redigo v1.6.0 // indirect
 	github.com/google/uuid v1.1.0
 	github.com/knative/pkg v0.0.0-20190125221134-b8c466480123
-	github.com/onsi/ginkgo v1.7.0 // indirect
-	github.com/onsi/gomega v1.4.3 // indirect
-	github.com/stretchr/testify v1.3.0 // indirect
-	gopkg.in/bsm/ratelimit.v1 v1.0.0-20160220154919-db14e161995a // indirect
+	github.com/kr/pretty v0.1.0 // indirect
+	github.com/mchmarny/kapi v0.0.0-20190128144243-17d88ac8ca63
+	golang.org/x/net v0.0.0-20190125091013-d26f9f9a57f3 // indirect
+	golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4 // indirect
+	golang.org/x/sys v0.0.0-20190124100055-b90733256f2e // indirect
+	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/redis.v3 v3.6.4
+	gopkg.in/yaml.v2 v2.2.2 // indirect
 )

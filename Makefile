@@ -41,8 +41,8 @@ cleanup:
 
 event:
 	curl -H "Content-Type: application/json" -X POST \
-			"https://kapi.demo.knative.tech/v1/stock/kkkk" | jq "."
+			"https://kapi.demo.knative.tech/v1/stock/nnnn" | jq "."
 
 status:
 	curl -H "Content-Type: application/json" -X GET \
-			"https://kapi.demo.knative.tech/v1/status/efe51b0e-2266-11e9-a446-0a580a14019e"
+			"https://kapi.demo.knative.tech/v1/status/id-0a580a14019e"
