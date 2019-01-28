@@ -4,11 +4,9 @@ import (
 	"fmt"
 	"log"
 	"encoding/json"
-	"time"
 
 	"github.com/mchmarny/kres/pkg/event"
 	"github.com/mchmarny/kres/pkg/common"
-	"github.com/cloudevents/sdk-go/v02"
 
 	"github.com/adjust/rmq"
 )
@@ -18,7 +16,6 @@ type EventRelay struct {
 	Name string
 	Sender event.Sender
 }
-
 
 // NewEventRelay creates new instance of EventConsumer
 func NewEventRelay(index int, sender event.Sender) *EventRelay {
