@@ -42,9 +42,9 @@ func (s *SinkSender) Send(e *common.SimpleStock) error {
 		return errors.New("Required argument: event")
 	}
 
-	log.Printf("Data: %v", e)
+	log.Printf("Data: %s - %s", e.ID, e.Symbol)
 
-	ectx := cloudevents.EventContext{
+	ctx := cloudevents.EventContext{
 		CloudEventsVersion: cloudevents.CloudEventsVersion,
 		EventType:          "tech.knative.demo.kapi.stock",
 		EventID:            e.ID,
@@ -54,7 +54,7 @@ func (s *SinkSender) Send(e *common.SimpleStock) error {
 	}
 
 
-	req, err := cloudevents.Binary.NewRequest(s.uri, e, ectx)
+	req, err := cloudevents.Binary.NewRequest(s.uri, &e, ctx)
 	if err != nil {
 		log.Printf("Failed to MARSHAL: %v", err)
 		return err
