@@ -2,6 +2,15 @@
 
 Redis-based queue event source for Knative
 
+```shell
+API --> Redis
+        Redis --> Event Source
+                  Event Source --> Service
+                                   Service --> Firestore
+```
+
+> TODO: refactor last service to write back to Redis for status in API
+
 ## Setup
 
 First, change these bellow variables to your own and export them in your environment

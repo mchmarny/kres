@@ -1,5 +1,5 @@
 
-.PHONY: client
+.PHONY: event
 
 # REDIS
 
@@ -39,5 +39,10 @@ source:
 cleanup:
 	kubectl delete -f config/source.yaml
 
-client:
-	go build ./cmd/client/
+event:
+	curl -H "Content-Type: application/json" -X POST \
+			"https://kapi.demo.knative.tech/v1/stock/kkkk" | jq "."
+
+status:
+	curl -H "Content-Type: application/json" -X GET \
+			"https://kapi.demo.knative.tech/v1/status/efe51b0e-2266-11e9-a446-0a580a14019e"

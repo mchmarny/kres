@@ -7,7 +7,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/cloudevents/sdk-go/v02"
+	"github.com/knative/pkg/cloudevents"
+
+	"github.com/mchmarny/kres/pkg/common"
 )
 
 const (
@@ -17,7 +19,7 @@ const (
 
 // Sender represents the generic sender interface
 type Sender interface {
-	Send(e *v02.Event) error
+	Send(e *common.SimpleStock) error
 }
 
 // SinkSender sends messages to sink
@@ -39,7 +41,7 @@ func NewSinkSender(sinkURI string) (sender Sender, err error) {
 
 // Send makes v02.Event event using passed data
 // and sends it to the the provided sinkURI
-func (s *SinkSender) Send(e *v02.Event) error {
+func (s *SinkSender) Send(e *common.SimpleStock) error {
 
 	if e == nil {
 		return errors.New("Required argument: event")
@@ -47,15 +49,23 @@ func (s *SinkSender) Send(e *v02.Event) error {
 
 	log.Printf("Data: %v", e)
 
-	m := v02.NewDefaultHTTPMarshaller()
-	var req *http.Request
-	err := m.ToRequest(req, e)
+	ectx := cloudevents.EventContext{
+		CloudEventsVersion: cloudevents.CloudEventsVersion,
+		EventType:          "tech.knative.demo.kapi.stock",
+		EventID:            e.ID,
+		EventTime:          e.RequestOn,
+		ContentType:        "application/json",
+		Source:             "tech.knative.demo.kapi",
+	}
+
+
+	req, err := cloudevents.Binary.NewRequest(s.uri, e, ectx)
 	if err != nil {
-		log.Printf("Unable to marshal event into http Request: %v", err)
+		log.Printf("Failed to MARSHAL: %v", err)
 		return err
 	}
 
-	log.Printf("Posting to %s: %v", s.uri, req)
+	log.Printf("Posting stock: %v", e)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -66,11 +76,17 @@ func (s *SinkSender) Send(e *v02.Event) error {
 
 	if resp.StatusCode != http.StatusOK &&
 		resp.StatusCode != http.StatusAccepted {
-		log.Printf("Response Status: %s", resp.Status)
-		body, _ := ioutil.ReadAll(resp.Body)
-		log.Printf("Response Body: %s", string(body))
+		log.Printf("Response Status Code: %d", resp.StatusCode)
 		return fmt.Errorf("Invalid response status code: %s", resp.Status)
 	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Error reading response body: %v", err)
+		return err
+	}
+
+	log.Printf("Response Body: %s", string(body))
 
 	return nil
 
