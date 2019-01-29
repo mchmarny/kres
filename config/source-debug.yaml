@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kres
+  namespace: demo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kres
+  template:
+    metadata:
+      labels:
+        app: kres
+      name: kres
+    spec:
+      containers:
+        - name: kres
+          image: gcr.io/s9-demo/kres:latest
+          imagePullPolicy: Always
+          env:
+            - name: DEBUG_SINK
+              value: "http://message-dumper.demo.knative.tech/"
+            - name: RELEASE
+              value: "v0.3.1"
+            - name: REDIS_HOST
+              value: "redis.demo.svc.cluster.local:6379"
+            - name: REDIS_QUEUE
+              value: "stocks"
+            - name: REDIS_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secrets
+                  key: REDIS_PASS

@@ -3,18 +3,16 @@ kind: ContainerSource
 metadata:
   name: redis-queue-source
   namespace: demo
-  labels:
-    source: redis
 spec:
   image: gcr.io/s9-demo/kres:latest
   imagePullPolicy: Always
   env:
   - name: RELEASE
-    value: "v0.2.1"
+    value: "v0.3.1"
   - name: REDIS_HOST
     value: "redis.demo.svc.cluster.local:6379"
   - name: REDIS_QUEUE
-    value: "events"
+    value: "stocks"
   - name: REDIS_PASS
     valueFrom:
       secretKeyRef:
@@ -23,5 +21,5 @@ spec:
   sink:
     apiVersion: serving.knative.dev/v1alpha1
     kind: Service
-    name: events
+    name: message-dumper
     namespace: demo

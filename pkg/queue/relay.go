@@ -1,45 +1,55 @@
 package queue
 
 import (
-	"fmt"
 	"log"
 	"encoding/json"
+	"errors"
 
-	"github.com/mchmarny/kres/pkg/event"
+	"github.com/mchmarny/kres/pkg/sender"
 	"github.com/mchmarny/kapi/common"
 
 	"github.com/adjust/rmq"
 )
 
 // EventRelay represents event consumer worker
-type EventRelay struct {
-	Name string
-	Sender event.Sender
-}
+type EventRelay struct {}
 
 // NewEventRelay creates new instance of EventConsumer
-func NewEventRelay(index int, sender event.Sender) *EventRelay {
-	return &EventRelay{
-		Name: fmt.Sprintf("redis-event-relay-%d", index),
-		Sender: sender,
+func NewEventRelay() *EventRelay {
+	return &EventRelay{}
+}
+
+func toStock(s string) (stock *common.SimpleStock, err error){
+
+	if s == "" {
+		return nil, errors.New("Nil json string")
 	}
+
+	var e common.SimpleStock
+	if err := json.Unmarshal([]byte(s), &e); err != nil {
+        log.Printf("Error while parsing JSON from payload: %s", err)
+		return nil, err
+    }
+
+	return &e, nil
 }
 
 // Consume is invoked on new queue event
 func (r *EventRelay) Consume(d rmq.Delivery) {
 
 	p := d.Payload()
-	log.Printf("Event Payload: %v", p)
+	log.Printf("Event Payload: %s", p)
 
-	var e *common.SimpleStock
-	if err := json.Unmarshal([]byte(p), e); err != nil {
-        log.Printf("Error while parsing JSON from payload: %s", err)
+
+	stock, err := toStock(p)
+	if err != nil {
+        log.Printf("Error converting payload to stock: %v", err)
 		d.Reject()
 		return
     }
 
 	// send the raw event
-	err := r.Sender.Send(e)
+	err = sender.Send(stock)
 
 	if err != nil {
 		log.Printf("Error while sending event: %v", err)

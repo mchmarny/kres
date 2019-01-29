@@ -43,7 +43,7 @@ spec:
                 key: REDIS_PASS
           volumeMounts:
             - name: redis-volume
-              mountPath: /data
+              mountPath: /redis-data
       volumes:
         - name: redis-volume
           gcePersistentDisk:

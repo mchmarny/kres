@@ -1,4 +1,4 @@
-package event
+package sender
 
 import (
 	"errors"
@@ -12,31 +12,25 @@ import (
 	"github.com/mchmarny/kapi/common"
 )
 
-// Sender represents the generic sender interface
-type Sender interface {
-	Send(e *common.SimpleStock) error
-}
 
-// SinkSender sends messages to sink
-type SinkSender struct {
-	uri string
-}
+var (
+	sinkURI string
+)
 
-// NewSinkSender creates configured instance of the sink sender
-func NewSinkSender(sinkURI string) (sender Sender, err error) {
-
-	if sinkURI == "" {
-		return nil, errors.New("Required argument: sinkURI")
+// Init initializes the redis queue
+func Init(uri string) error {
+	if uri == "" {
+		return errors.New("URI required to init sender")
 	}
-
-	return &SinkSender{
-		uri: sinkURI,
-	}, nil
+	log.Printf("Sender initialized for %s", uri)
+	sinkURI = uri
+	return nil
 }
+
 
 // Send makes v02.Event event using passed data
 // and sends it to the the provided sinkURI
-func (s *SinkSender) Send(e *common.SimpleStock) error {
+func Send(e *common.SimpleStock) error {
 
 	if e == nil {
 		return errors.New("Required argument: event")
@@ -53,14 +47,19 @@ func (s *SinkSender) Send(e *common.SimpleStock) error {
 		Source:             "tech.knative.demo.kapi",
 	}
 
-
-	req, err := cloudevents.Binary.NewRequest(s.uri, &e, ctx)
+	req, err := cloudevents.Binary.NewRequest(sinkURI, e, ctx)
 	if err != nil {
-		log.Printf("Failed to MARSHAL: %v", err)
+		log.Printf("Failed to marshal: %v", err)
 		return err
 	}
 
-	log.Printf("Posting stock: %v", e)
+	log.Printf("Ce-Source: %s", req.Header.Get("Ce-Source"))
+	log.Printf("Ce-Eventtype: %s", req.Header.Get("Ce-Eventtype"))
+
+	req.Header.Set("Ce-Source", "tech.knative.demo.kapi")
+	req.Header.Set("Ce-Eventtype", "tech.knative.demo.kapi.stock")
+
+	log.Printf("Posting: %v", req)
 
 	client := &http.Client{}
 	resp, err := client.Do(req)

@@ -1,7 +1,7 @@
 apiVersion: serving.knative.dev/v1alpha1
 kind: Service
 metadata:
-  name: events
+  name: stocker
   namespace: demo
 spec:
   runLatest:
@@ -9,14 +9,14 @@ spec:
       revisionTemplate:
         metadata:
           labels:
-            demo: events
+            demo: stocker
         spec:
           container:
             image: gcr.io/s9-demo/myevents:latest
             imagePullPolicy: Always
             env:
             - name: RELEASE
-              value: "v0.4.2"
+              value: "v0.1.1"
             - name: GCP_PROJECT_ID
               valueFrom:
                 configMapKeyRef:

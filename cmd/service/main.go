@@ -4,8 +4,8 @@ import (
 	"flag"
 	"log"
 
-	"github.com/mchmarny/kres/pkg/event"
 	"github.com/mchmarny/kres/pkg/queue"
+	"github.com/mchmarny/kres/pkg/sender"
 )
 
 var (
@@ -20,9 +20,9 @@ func main() {
 
 	flag.Parse()
 
-	// setup sender
-	log.Printf("Setting up sender: %s", sinkName)
-	sender, err := event.NewSinkSender(sinkName)
+		// setup sender
+	log.Printf("Initializing sender with sink: %s", sinkName)
+	err := sender.Init(sinkName)
 	if err != nil {
 		log.Fatalf("Error while creating sink sender: %v", err)
 	}
@@ -36,5 +36,5 @@ func main() {
 	defer queue.Stop()
 
 	log.Println("Starting sourcing events...")
-	queue.ConsumeAndRelay(sender)
+	queue.ConsumeAndRelay()
 }

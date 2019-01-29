@@ -9,13 +9,12 @@ import (
 	"gopkg.in/redis.v3"
 	"github.com/adjust/rmq"
 
-	"github.com/mchmarny/kres/pkg/event"
 )
 
 const (
 	redisTag = "knativeEventSource"
 	defaultRedisQueueName = "events"
-	defaultConsumerName = "sinkRelay"
+	defaultConsumerName = "knativeSinkRelay"
 	redisHostToken = "REDIS_HOST"
 	redisPassToken = "REDIS_PASS"
 	redisQueueNameToken = "REDIS_QUEUE"
@@ -82,7 +81,7 @@ func Init() error {
 
 
 // ConsumeAndRelay starts consuming from queue and relaying it using sender
-func ConsumeAndRelay(sender event.Sender) {
+func ConsumeAndRelay() {
 
 	// prefetch limit maxNumberOfEventConsumers, poll duration 1s
 	// prefetchLimit == number of consumers + 1
@@ -92,7 +91,7 @@ func ConsumeAndRelay(sender event.Sender) {
 
 	// add that one consumer (index 0)
 	log.Printf("Adding relay consumer: %s...", defaultConsumerName)
-	queue.AddConsumer(defaultConsumerName, NewEventRelay(0, sender))
+	queue.AddConsumer(defaultConsumerName, NewEventRelay())
 
 	log.Println("Entering consumer loop...")
 	select {}
