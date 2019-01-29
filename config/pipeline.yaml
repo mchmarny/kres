@@ -1,0 +1,50 @@
+apiVersion: sources.eventing.knative.dev/v1alpha1
+kind: ContainerSource
+metadata:
+  name: redis-queue-stock-source
+  namespace: demo
+spec:
+  image: gcr.io/s9-demo/kres:latest
+  imagePullPolicy: Always
+  env:
+  - name: RELEASE
+    value: "v0.3.3"
+  - name: REDIS_HOST
+    value: "redis.demo.svc.cluster.local:6379"
+  - name: REDIS_QUEUE
+    value: "stocks"
+  - name: REDIS_PASS
+    valueFrom:
+      secretKeyRef:
+        name: redis-secrets
+        key: REDIS_PASS
+  sink:
+    apiVersion: serving.knative.dev/v1alpha1
+    kind: Channel
+    name: stocks
+    namespace: demo
+
+---
+
+apiVersion: eventing.knative.dev/v1alpha1
+kind: Subscription
+metadata:
+  name: stock-processor-sub
+  namespace: demo
+spec:
+  channel:
+    apiVersion: eventing.knative.dev/v1alpha1
+    kind: Channel
+    name: stocks
+    namespace: demo
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1alpha1
+      kind: Service
+      name: stock-pricer
+      namespace: demo
+  sink:
+    apiVersion: serving.knative.dev/v1alpha1
+    kind: Channel
+    name: stock-saver
+    namespace: demo

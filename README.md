@@ -1,6 +1,6 @@
 # kres (Knative Redis Event Source)
 
-Redis-based queue event source for Knative
+Redis-based queue event source for Knative. Work in progress. Currently the end-to-end pipeline looks like this
 
 ```shell
 API --> Redis
@@ -9,7 +9,11 @@ API --> Redis
                                    Service --> Firestore
 ```
 
-> TODO: refactor last service to write back to Redis for status in API
+* API - [github.com/mchmarny/kapi](https://github.com/mchmarny/kapi)
+* Redis Event Source - this
+* Service - [github.com/mchmarny/myevents](https://github.com/mchmarny/myevents)
+
+This is WIP,
 
 ## Setup
 
