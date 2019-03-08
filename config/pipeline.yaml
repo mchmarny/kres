@@ -1,3 +1,32 @@
+# External API for stock collection
+# All other services are cluster local
+apiVersion: serving.knative.dev/v1alpha1
+kind: Service
+metadata:
+  name: kapi
+  namespace: demo
+spec:
+  runLatest:
+    configuration:
+      revisionTemplate:
+        spec:
+          container:
+            image: gcr.io/s9-demo/kapi:latest
+            env:
+            - name: RELEASE
+              value: "v0.3.3"
+            - name: REDIS_HOST
+              value: "redis.demo.svc.cluster.local:6379"
+            - name: REDIS_QUEUE
+              value: "stocks"
+            - name: GIN_MODE
+              value: "release"
+            - name: REDIS_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secrets
+                  key: REDIS_PASS
+---
 # Capture new item on Redis queue event
 apiVersion: sources.eventing.knative.dev/v1alpha1
 kind: ContainerSource
@@ -6,7 +35,6 @@ metadata:
   namespace: demo
 spec:
   image: gcr.io/s9-demo/kres:latest
-  imagePullPolicy: Always
   env:
   - name: RELEASE
     value: "v0.3.3"
