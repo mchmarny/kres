@@ -1,3 +1,4 @@
+# Capture new item on Redis queue event
 apiVersion: sources.eventing.knative.dev/v1alpha1
 kind: ContainerSource
 metadata:
@@ -23,13 +24,12 @@ spec:
     kind: Channel
     name: stocks
     namespace: demo
-
 ---
-
+# Filter out non NASDAQ stocks
 apiVersion: eventing.knative.dev/v1alpha1
 kind: Subscription
 metadata:
-  name: stock-processor-sub
+  name: stock-filter-sub
   namespace: demo
 spec:
   channel:
@@ -41,10 +41,51 @@ spec:
     ref:
       apiVersion: serving.knative.dev/v1alpha1
       kind: Service
+      name: stock-filter
+      namespace: demo
+  sink:
+    apiVersion: serving.knative.dev/v1alpha1
+    kind: Channel
+    name: stock-filtered
+    namespace: demo
+---
+# Price NASDAQ stocks
+apiVersion: eventing.knative.dev/v1alpha1
+kind: Subscription
+metadata:
+  name: stock-pricer-sub
+  namespace: demo
+spec:
+  channel:
+    apiVersion: eventing.knative.dev/v1alpha1
+    kind: Channel
+    name: stock-filtered
+    namespace: demo
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1alpha1
+      kind: Service
       name: stock-pricer
       namespace: demo
   sink:
     apiVersion: serving.knative.dev/v1alpha1
     kind: Channel
-    name: stock-saver
+    name: stock-priced
     namespace: demo
+---
+# Save priced stocks to Firestore
+apiVersion: eventing.knative.dev/v1alpha1
+kind: Subscription
+metadata:
+  name: stock-saver
+spec:
+  channel:
+    apiVersion: eventing.knative.dev/v1alpha1
+    kind: Channel
+    name: stock-priced
+  subscriber:
+    ref:
+      apiVersion: serving.knative.dev/v1alpha1
+      kind: Service
+      name: stock-saver
+      namespace: demo
