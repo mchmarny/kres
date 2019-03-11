@@ -8,7 +8,7 @@ spec:
   imagePullPolicy: Always
   env:
   - name: RELEASE
-    value: "v0.3.3"
+    value: "v0.3.4"
   - name: REDIS_HOST
     value: "redis.demo.svc.cluster.local:6379"
   - name: REDIS_QUEUE
