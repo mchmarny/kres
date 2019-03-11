@@ -13,7 +13,6 @@ spec:
         spec:
           container:
             image: gcr.io/s9-demo/kapi:latest
-            imagePullPolicy: Always
             env:
             - name: RELEASE
               value: "v0.3.3"
